@@ -1,0 +1,3 @@
+/Users/asiawu/CLionProjects/operationSystem/cmake-build-debug/CMakeFiles/operationSystem.dir
+/Users/asiawu/CLionProjects/operationSystem/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/asiawu/CLionProjects/operationSystem/cmake-build-debug/CMakeFiles/rebuild_cache.dir
