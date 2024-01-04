@@ -8,10 +8,9 @@
 using namespace std;
 mutex create_mu;
 mutex run_mu;
-mutex mu;
 FS tempFS;
 Disk tempDS;
-RAM tempram;
+RAM tempRAM;
 FS::FCB *path1 = tempFS.ptr;
 
 
@@ -49,20 +48,17 @@ void f_delete() {
 void f_run() {
     run_mu.lock();
     string name;
-    cout << "输入文件名:";
     cin >> name;
-    FS::FCB *path = path1;
     int pointer;
     string content;
     int size;
-    pointer = tempFS.getPointer(path, name);
+    pointer = tempFS.getPointer(name);
     if (pointer != -1) {
         content = tempDS.Get_content(pointer);
         size = content.length();
         int a[10] = {1, 0, 2, 3, 1, 2, 0, 1, 2, 1};
-        tempram.allocation(name, size, content, a, 10);
-    } else {
-        printf("not found\n");
+        tempRAM.allocation(name, size, content, a, 10);
+        tempFS.openFile(name);
     }
     run_mu.unlock();
 }
@@ -70,7 +66,7 @@ void f_run() {
 int main() {
     string opt;
     while (1) {
-        cout << "input operation:(ls/touch/cd/mkdir/rm/run/disk/exit)" << endl;
+        cout << "input operation:(ll/touch/cd/mkdir/rm/run/disk/exit)" << endl;
         cout<<">>> ";
         cin >> opt;
         if (opt == "ll") {
@@ -106,12 +102,24 @@ int main() {
         else if (opt == "run") {
             //运行文件
             f_run();
-        } else if (opt == "disk") {
+            //显示磁盘占用情况
+        } else if (opt == "showdisk") {
             tempDS.print();
+            //显示内存占用情况
+        } else if(opt == "showram") {
+            tempRAM.print_ram();
+            //
+        } else if(opt == "recovery") {
+            string processName;
+            cin>>processName;
+            tempRAM.recovery(processName);
+            tempFS.closeFile(processName);
         }
-            //TODO 显示内存占用情况
+
             //TODO 关闭进程、回收内存
-        else break;
+        else {
+            cout<<"命令不合法"<<endl;
+        }
     }
 
 }

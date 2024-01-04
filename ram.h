@@ -100,7 +100,7 @@ void RAM::allocation(string processName, int size, string content, int run[], in
     //TODO Byte
     cout << "占用空间：" << size << "KB" << endl;
     //TODO 40
-    int tableNum = (size - 1) / 40+ 1, freeBlock, num, max;
+    int tableNum = (size - 1) / 40 + 1, freeBlock, num, max;
     class PageTable pageTable;
     pageTable.owner = processName;
     pageTable.size = size;
@@ -110,13 +110,13 @@ void RAM::allocation(string processName, int size, string content, int run[], in
 
     for (int i = 0; i < runSize; i++) {
         //TODO 40
-                //TODO 40
-         string str;
-if (run[i] * 40< size) {
-    int substrLength = min(40, size - run[i] * 40); // 确保子字符串长度不超过剩余长度
-    str = content.substr(run[i] * 40, substrLength);
-    cout << "提取的子字符串：" << str << endl;
-} 
+        //TODO 40
+        string str;
+        if (run[i] * 40 < size) {
+            int substrLength = min(40, size - run[i] * 40); // 确保子字符串长度不超过剩余长度
+            str = content.substr(run[i] * 40, substrLength);
+            cout << "提取的子字符串：" << str << endl;
+        }
         bool full = true;
         max = -1;
         cout << "进程访问页面" << run[i] << "，";
@@ -171,13 +171,12 @@ void RAM::recovery(string processName) {
     vector<class PageTable>::iterator it;
     for (it = pageTables.begin(); it != pageTables.end(); it++) {
         if ((*it).owner == processName) {
-            for (int i = 0; i < (*it).tables.size(); i++) {
+            for (int i = 0; i < 8; i++) {
                 blockTable[(*it).tables[i].blockNumber].state = 0;
                 blockTable[(*it).tables[i].blockNumber].owner = "";
                 blockTable[(*it).tables[i].blockNumber].content = "";
             }
             pageTables.erase(it);
-            cout << "已回收进程" << processName << endl;
             return;
         }
     }

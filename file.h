@@ -54,17 +54,31 @@ public:
     }
 
     //打开文件 设置标志位
-    void openFile(FCB *path, string fileName) {
-        FCB *p = path;
-        while (p != nullptr) {
-            if (p->_name == fileName && p->_type == "FILE" && p->_free != true) {
-                p->_free = false;
+    void openFile(string fileName) {
+        FCB *cur = ptr->_child;
+        while (cur != nullptr) {
+            if (cur->_name == fileName && cur->_type == "FILE" && cur->_free == true) {
+                cur->_free = false;
 
-            } else if (p->_name == fileName && p->_type == "FILE" && p->_free != false) {
+            } else if (cur->_name == fileName && cur->_type == "FILE" && cur->_free == false) {
                 cout << "文件已在运行，无法再次运行" << endl;
             }
+            cur = cur->_next;
         }
+    }
 
+    //关闭文件 设置标志位
+    void closeFile(string fileName) {
+        FCB *cur = ptr->_child;
+        while (cur != nullptr) {
+            if (cur->_name == fileName && cur->_type == "FILE" && cur->_free == false) {
+                cur->_free = true;
+
+            } else if (cur->_name == fileName && cur->_type == "FILE" && cur->_free == true) {
+                cout << "文件已关闭" << endl;
+            }
+            cur = cur->_next;
+        }
     }
 
     void cd(string name) {
@@ -104,7 +118,7 @@ public:
                 return true;
             } else if (cur->_name == filename && cur->_child == nullptr && cur->_type == "FILE" &&
                        cur->_free == false) {
-                cout << "文件进程正在运行，无法删除";
+                cout << "文件进程正在运行，无法删除" << endl;
                 return false;
             }
             if (!isFirst) {
@@ -222,7 +236,7 @@ public:
                 return cur;
             }
             if (cur != nullptr) {
-                cur = cur->_next;
+                cur = cur->_child;
             }
         }
         cout << "文件不存在" << endl;
@@ -232,23 +246,23 @@ public:
 
     //显示当前目录下所有文件/文件夹
     void ls() {
-        cout<<"";
+        cout << "";
         printf("%-20s%-20s%-20s\n", "文件名", "文件类型", "创建时间");
         FCB *cur = ptr;
         cur = cur->_child;
         bool flag = false;
         while (cur != nullptr) {
-            printf("%-20s%-20s%-20s\n", cur->_name.c_str(), cur->_type.c_str(), cur->_createtime.c_str());
+            printf("%-17s%-13s%-14s\n", cur->_name.c_str(), cur->_type.c_str(), cur->_createtime.c_str());
             cur = cur->_next;
             flag = true;
         }
         if (!flag)
-            cout <<endl;
+            cout << endl;
     }
 
 
     //得到磁盘地址pointer
-    int getPointer(FCB *path, string name) {
+    int getPointer(string name) {
         FCB *res = getFCB(name);
         if (res != nullptr) {
             return res->_pointer;
