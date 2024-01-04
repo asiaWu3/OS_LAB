@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -41,8 +42,8 @@ public:
     void print() {
         cout << "页表" << endl;
         for (int i = 0; i < tableNum; i++) {
-            printf("%-11s%-11s%-11s%-11s%-11s%-11s\n", "页号", "物理块号", "状态位", "访问字段", "修改位", "外存地址");
-            printf("%-11d%-11d%-11d%-11d%-11d%-11d\n", tables[i].pageNumber, tables[i].blockNumber, tables[i].state,
+            printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "页号", "物理块号", "状态位", "访问字段", "修改位", "外存地址");
+            printf("%-17d%-17d%-17d%-17d%-17d%-18d\n", tables[i].pageNumber, tables[i].blockNumber, tables[i].state,
                    tables[i].accessFields, tables[i].isModify, tables[i].storage);
         }
         cout << endl;
@@ -68,6 +69,8 @@ public:
     const static int blockSize = 40;
     struct BlockTable blockTable[64];    //长度为64的内存块分配项表
     vector<class PageTable> pageTables;
+    bool use[8]; //进程块占用情况
+    map<string, int> process_index; //进程对应的进程块序号
 
     RAM();
 
@@ -99,6 +102,18 @@ void RAM::allocation(string processName, int size, string content, int run[], in
     cout << "占有进程名：" << processName << endl;
     //TODO Byte
     cout << "占用空间：" << size << "KB" << endl;
+    bool flag = false;
+    for (int i = 0; i < 8; i++) {
+        if (!use[i]) {
+            use[i] = true;
+            process_index[processName] = i;
+            flag = true;
+            break;
+        }
+    }
+    if (!flag) {
+        cout << "无可用内存空间" << endl;
+    }
     //TODO 40
     int tableNum = (size - 1) / 40 + 1, freeBlock, num, max;
     class PageTable pageTable;
@@ -177,6 +192,9 @@ void RAM::recovery(string processName) {
                 blockTable[(*it).tables[i].blockNumber].content = "";
             }
             pageTables.erase(it);
+
+            int index = process_index[processName];
+            use[index] = false;
             return;
         }
     }
@@ -193,7 +211,7 @@ void RAM::print_process() {
 
 //用于寻找空闲内存块
 int RAM::find(string processName, string str) {
-    for (int i = 0; i < blockNum; i++) {
+    for (int i = process_index[processName] * 8; i < (process_index[processName] + 1) * 8; i++) {
         if (!blockTable[i].state) {
             blockTable[i].state = 1;
             blockTable[i].owner = processName;
@@ -208,11 +226,11 @@ int RAM::find(string processName, string str) {
 
 //用于打印内存块有关信息
 void RAM::print_ram() {
-    cout << "内存状态" << endl;
+    cout << "\t\t\t\t内存状态" << endl;
     for (int i = 0; i < blockNum; i++) {
-        printf("%-11s%-11s%-11s%-11s%-11s%-11s%-11s\n", "内存块号", "起始地址", "结束地址", "块长", "状态", "占有者",
+        printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "内存块号", "起始地址", "结束地址", "块长", "状态", "占有者",
                "内容");
-        printf("%-11d%-11d%-11d%-11d%-11d%-11s%-11s\n", blockTable[i].blockNumber, blockTable[i].start,
+        printf("%-15d%-15d%-15d%-16d%-17d%-18s%-15s\n", blockTable[i].blockNumber, blockTable[i].start,
                blockTable[i].end, blockTable[i].size, blockTable[i].state, blockTable[i].owner.c_str(),
                blockTable[i].content.c_str());
     }

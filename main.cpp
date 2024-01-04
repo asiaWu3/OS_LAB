@@ -55,11 +55,13 @@ void f_run() {
     int size;
     pointer = tempFS.getPointer(name);
     if (pointer != -1) {
-        content = tempDS.Get_content(pointer);
-        size = content.length();
-        int a[13] = {1, 0, 2, 3, 1, 2, 4, 1, 2, 5, 3, 7, 2};
-        tempRAM.allocation(name, size, content, a, 10);
-        tempFS.openFile(name);
+        //判断是否已打开
+        if (tempFS.openFile(name)) {
+            content = tempDS.Get_content(pointer);
+            size = content.length();
+            int a[14] = {1, 0, 2, 3, 1, 2, 4, 1, 2, 5, 3, 7, 2, 6};
+            tempRAM.allocation(name, size, content, a, 14);
+        }
     }
     run_mu.unlock();
 }

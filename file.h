@@ -54,7 +54,7 @@ public:
     }
 
     //打开文件 设置标志位
-    void openFile(string fileName) {
+    bool openFile(string fileName) {
         FCB *cur = ptr->_child;
         while (cur != nullptr) {
             if (cur->_name == fileName && cur->_type == "FILE" && cur->_free == true) {
@@ -62,9 +62,11 @@ public:
 
             } else if (cur->_name == fileName && cur->_type == "FILE" && cur->_free == false) {
                 cout << "文件已在运行，无法再次运行" << endl;
+                return false;
             }
             cur = cur->_next;
         }
+        return true;
     }
 
     //关闭文件 设置标志位
@@ -233,13 +235,13 @@ public:
 
     //返回文件的FCB
     FCB *getFCB(string filename) {
-        FCB *cur = ptr;
+        FCB *cur = ptr->_child;
         while (cur != nullptr) {
             if (cur->_name == filename) {
                 return cur;
             }
             if (cur != nullptr) {
-                cur = cur->_child;
+                cur = cur->_next;
             }
         }
         cout << "文件不存在" << endl;
