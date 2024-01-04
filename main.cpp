@@ -57,7 +57,7 @@ void f_run() {
     if (pointer != -1) {
         content = tempDS.Get_content(pointer);
         size = content.length();
-        int a[10] = {1, 0, 2, 3, 1, 2, 0, 1, 2, 1};
+        int a[13] = {1, 0, 2, 3, 1, 2, 4, 1, 2, 5, 3, 7, 2};
         tempRAM.allocation(name, size, content, a, 10);
         tempFS.openFile(name);
     }
