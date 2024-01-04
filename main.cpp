@@ -11,7 +11,6 @@ mutex run_mu;
 FS tempFS;
 Disk tempDS;
 RAM tempRAM;
-FS::FCB *path1 = tempFS.ptr;
 
 
 void f_create() {
@@ -19,7 +18,7 @@ void f_create() {
     int size;              //byte
     string content;
     string name;
-    cin>>name>>size>>content;
+    cin >> name >> size >> content;
     int pointer;
     //磁盘块里塞东西
     pointer = tempDS.Create_file(name, size, content);
@@ -38,10 +37,12 @@ void f_delete() {
     create_mu.lock();
     string name;
     cin >> name;
-    int pointer;
     //目录中删除
-    tempFS.deleteFile(name);
-//    else Delete_file(pointer);
+    int pointer = tempFS.deleteFile(name);
+    if (pointer != -1) {
+        //磁盘中删除
+//        Delete_file(pointer);
+    }
     create_mu.unlock();
 }
 
@@ -67,7 +68,7 @@ int main() {
     string opt;
     while (1) {
         cout << "input operation:(ll/touch/cd/mkdir/rm/run/disk/exit)" << endl;
-        cout<<">>> ";
+        cout << ">>> ";
         cin >> opt;
         if (opt == "ll") {
             //列出当前目录下所有文件、文件夹
@@ -77,8 +78,7 @@ int main() {
             string dir_name;
             cin >> dir_name;
             tempFS.cd(dir_name);
-        }
-        else if (opt == "pwd") {
+        } else if (opt == "pwd") {
             tempFS.pwd();
         } else if (opt == "touch") {
             //创建文件
@@ -94,31 +94,27 @@ int main() {
             //删除文件
             // TODO 磁盘删除
             f_delete();
-        } else if(opt == "rmdir") {
+        } else if (opt == "rmdir") {
             string dirName;
-            cin>>dirName;
+            cin >> dirName;
             tempFS.deleteDir(dirName);
-        }
-        else if (opt == "run") {
+        } else if (opt == "run") {
             //运行文件
             f_run();
             //显示磁盘占用情况
         } else if (opt == "showdisk") {
             tempDS.print();
             //显示内存占用情况
-        } else if(opt == "showram") {
+        } else if (opt == "showram") {
             tempRAM.print_ram();
             //
-        } else if(opt == "recovery") {
+        } else if (opt == "recovery") {
             string processName;
-            cin>>processName;
+            cin >> processName;
             tempRAM.recovery(processName);
             tempFS.closeFile(processName);
-        }
-
-            //TODO 关闭进程、回收内存
-        else {
-            cout<<"命令不合法"<<endl;
+        } else {
+            cout << "命令不合法" << endl;
         }
     }
 

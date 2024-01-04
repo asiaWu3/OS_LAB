@@ -102,7 +102,8 @@ public:
         return;
     }
 
-    bool deleteFile(string filename) {  //删除文件
+    //删除文件 返回文件对应物理块号
+    int deleteFile(string filename) {
         FCB *cur = ptr;
         FCB *child = cur->_child;
         cur = cur->_child;
@@ -114,12 +115,13 @@ public:
                 else {
                     child->_next = cur->_next;
                 }
+                int res = cur->_pointer;
                 delete cur;
-                return true;
+                return res;
             } else if (cur->_name == filename && cur->_child == nullptr && cur->_type == "FILE" &&
                        cur->_free == false) {
                 cout << "文件进程正在运行，无法删除" << endl;
-                return false;
+                return -1;
             }
             if (!isFirst) {
                 child = child->_next;
@@ -129,6 +131,7 @@ public:
             cur = cur->_next;
         }
         cout << "文件不存在" << endl;
+        return -1;
     }
 
 
