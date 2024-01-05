@@ -22,14 +22,9 @@ public:
         string _name;
         string _type;
         string _content;
-        bool open;
         int _pointer; // 磁盘地址
-
         string _createtime;
-
         FCB *_next, *_child, *_parent;
-
-
         bool _free = true;// 判断文件是否被打开
 
         FCB(string name, string type, string createtime, bool free, FCB *next, FCB *child, FCB *parent,
@@ -279,7 +274,7 @@ public:
         FCB *cur = ptr;
         string res;
         while (cur != root) {
-            res = "/" + ptr->_name + res;
+            res = "/" + cur->_name + res;
             cur = cur->_parent;
         }
         if (res == "") {

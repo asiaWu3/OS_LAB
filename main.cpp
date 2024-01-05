@@ -69,7 +69,7 @@ void f_run() {
 int main() {
     string opt;
     while (1) {
-        cout << "input operation:(ll/touch/cd/mkdir/rm/run/disk/exit)" << endl;
+        cout << "input operation:(ll/cd/pwd/touch/mkdir/rm/rmdir/run/showdisk/showram/exit)" << endl;
         cout << ">>> ";
         cin >> opt;
         if (opt == "ll") {
@@ -115,9 +115,11 @@ int main() {
             cin >> processName;
             tempRAM.recovery(processName);
             tempFS.closeFile(processName);
+        } else if (opt == "exit") {
+            cout << "exit..." << endl;
+            break;
         } else {
             cout << "命令不合法" << endl;
         }
     }
-
 }
